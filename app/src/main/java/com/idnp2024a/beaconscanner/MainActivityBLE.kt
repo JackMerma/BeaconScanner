@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.location.LocationManagerCompat
+import com.idnp2024a.beaconscanner.button.CustomButton
 import com.idnp2024a.beaconscanner.permissions.BTPermissions
 import com.idnp2024a.beaconscanner.permissions.Permission
 import com.idnp2024a.beaconscanner.permissions.PermissionManager
@@ -38,11 +39,12 @@ class MainActivityBLE : AppCompatActivity() {
         BTPermissions(this).check()
         initBluetooth()
 
-        val btnAdversting = findViewById<Button>(R.id.btnAdversting)
-        val btnStart = findViewById<Button>(R.id.btnStart)
-        val btnStop = findViewById<Button>(R.id.btnStop)
-        txtMessage = findViewById(R.id.txtMessage)
+        // defining buttons
+        var btnAdversting = CustomButton(this, null, 0, this, R.id.btnAdversting)
+        val btnStart = CustomButton(this, null, 0, this, R.id.btnStart)
+        val btnStop = CustomButton(this, null, 0, this, R.id.btnStop)
 
+        txtMessage = findViewById(R.id.txtMessage)
 
         val bleScanCallback = BleScanCallback(
             onScanResultAction,

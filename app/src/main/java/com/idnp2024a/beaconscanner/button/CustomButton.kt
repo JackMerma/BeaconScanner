@@ -17,8 +17,17 @@ class CustomButton @JvmOverloads constructor(
 
     init {
         if (activity != null && viewId != null){
-            // TODO
-            // initialize component
+            initializeWithId(activity, viewId)
         }
+    }
+
+    private fun initializeWithId(activity: Activity, viewId: Int){
+        // Getting the related button using the Id
+        val button = activity.findViewById<Button>(viewId)
+
+        // Creating other variables
+        this.id = button.id
+        this.text = button.text
+        this.layoutParams = button.layoutParams
     }
 }
