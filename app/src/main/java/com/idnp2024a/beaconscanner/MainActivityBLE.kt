@@ -14,6 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.location.LocationManagerCompat
 import com.idnp2024a.beaconscanner.button.CustomButton
+import com.idnp2024a.beaconscanner.button.StartButton
 import com.idnp2024a.beaconscanner.permissions.BTPermissions
 import com.idnp2024a.beaconscanner.permissions.Permission
 import com.idnp2024a.beaconscanner.permissions.PermissionManager
@@ -41,7 +42,7 @@ class MainActivityBLE : AppCompatActivity() {
 
         // defining buttons
         var btnAdversting = CustomButton(this, null, 0, this, R.id.btnAdversting)
-        val btnStart = CustomButton(this, null, 0, this, R.id.btnStart)
+        val btnStart = StartButton(this, null, 0, this, R.id.btnStart)
         val btnStop = CustomButton(this, null, 0, this, R.id.btnStop)
 
         txtMessage = findViewById(R.id.txtMessage)
@@ -52,19 +53,14 @@ class MainActivityBLE : AppCompatActivity() {
             onScanFailedAction
         )
 
+        /**
         btnAdversting.setOnClickListener {
             //val iBeaconEmissor=IBeaconEmissor(applicationContext)
             //iBeaconEmissor.emissor()
         }
+        */
 
-        btnStart.setOnClickListener {
-            if (isLocationEnabled()) {
-                bluetoothScanStart(bleScanCallback)
-            } else {
-                showPermissionDialog()
-            }
-        }
-
+        btnStart.setupStartButtonBehavior(TAG, btScanner, permissionManager, bleScanCallback, this, alertDialog)
         btnStop.setOnClickListener {
             bluetoothScanStop(bleScanCallback)
         }
@@ -81,31 +77,6 @@ class MainActivityBLE : AppCompatActivity() {
             Log.d(TAG, "BluetoothAdapter is null")
         }
     }
-
-    private fun bluetoothScanStart(bleScanCallback: BleScanCallback) {
-        Log.d(TAG, "btScan ...1")
-        if (btScanner != null) {
-            Log.d(TAG, "btScan ...2")
-            permissionManager
-                .request(Permission.Location)
-                .rationale("Bluetooth permission is needed")
-                .checkPermission { isgranted ->
-                    if (isgranted) {
-                        btScanner!!.startScan(bleScanCallback)
-                    } else {
-                        Log.d(TAG, "Alert you don't have Bluetooth permission")
-                    }
-                }
-        } else {
-            Log.d(TAG, "btScanner is null")
-        }
-    }
-
-    private fun isLocationEnabled(): Boolean {
-        val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
-        return LocationManagerCompat.isLocationEnabled(locationManager)
-    }
-
 
     @SuppressLint("MissingPermission")
     private fun bluetoothScanStop(bleScanCallback: BleScanCallback) {
@@ -202,23 +173,5 @@ class MainActivityBLE : AppCompatActivity() {
             TAG,
             "DECODE data_len:$data_len data_type:$data_type LE_flag:$LE_flag len:$len type:$type subtype:$subtype subtype_len:$subtypelen company:$company UUID:$iBeaconUUID major:$major minor:$minor txPower:$txPower"
         )
-    }
-
-    private fun showPermissionDialog() {
-
-        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-        builder.setTitle("Alerta")
-            .setMessage("El servicio de localizacion no esta activo")
-            .setPositiveButton("Close") { dialog, which ->
-                dialog.dismiss()
-            }
-
-        if (alertDialog == null) {
-            alertDialog = builder.create()
-        }
-
-        if (!alertDialog!!.isShowing()) {
-            alertDialog!!.show()
-        }
     }
 }
