@@ -26,5 +26,4 @@ class Beacon(mac: String?) {
     override fun hashCode(): Int {
         return macAddress?.hashCode() ?: 0
     }
-
 }

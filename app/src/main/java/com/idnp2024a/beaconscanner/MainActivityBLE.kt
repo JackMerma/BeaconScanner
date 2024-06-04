@@ -20,7 +20,9 @@ import com.idnp2024a.beaconscanner.permissions.PermissionManager
 
 class MainActivityBLE : AppCompatActivity() {
 
-    private val TAG: String = "MainActivityBLE"
+    private companion object {
+        const val TAG: String = "MainActivityBLE"
+    }
     private var alertDialog: AlertDialog? = null
     private lateinit var bluetoothManager: BluetoothManager
     private lateinit var btScanner: BluetoothLeScanner
@@ -29,14 +31,9 @@ class MainActivityBLE : AppCompatActivity() {
     private val permissionManager = PermissionManager.from(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
-        //enableEdgeToEdge()
         setContentView(R.layout.activity_main_ble)
-        /*        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-                    val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-                    v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-                    insets
-                }*/
 
         BTPermissions(this).check()
         initBluetooth()
@@ -54,8 +51,8 @@ class MainActivityBLE : AppCompatActivity() {
         )
 
         btnAdversting.setOnClickListener {
-//            val iBeaconEmissor=IBeaconEmissor(applicationContext)
-//            iBeaconEmissor.emissor()
+            //val iBeaconEmissor=IBeaconEmissor(applicationContext)
+            //iBeaconEmissor.emissor()
         }
 
         btnStart.setOnClickListener {
@@ -69,7 +66,6 @@ class MainActivityBLE : AppCompatActivity() {
         btnStop.setOnClickListener {
             bluetoothScanStop(bleScanCallback)
         }
-
     }
 
     fun initBluetooth() {
@@ -97,13 +93,10 @@ class MainActivityBLE : AppCompatActivity() {
                     } else {
                         Log.d(TAG, "Alert you don't have Bluetooth permission")
                     }
-
                 }
-
         } else {
             Log.d(TAG, "btScanner is null")
         }
-
     }
 
     private fun isLocationEnabled(): Boolean {
@@ -122,7 +115,6 @@ class MainActivityBLE : AppCompatActivity() {
         } else {
             Log.d(TAG, "btScanner is null")
         }
-
     }
 
     @SuppressLint("MissingPermission")
@@ -170,7 +162,6 @@ class MainActivityBLE : AppCompatActivity() {
             }
             */
         }
-
     }
 
     val onBatchScanResultAction: (MutableList<ScanResult>?) -> Unit = {
@@ -209,8 +200,6 @@ class MainActivityBLE : AppCompatActivity() {
             TAG,
             "DECODE data_len:$data_len data_type:$data_type LE_flag:$LE_flag len:$len type:$type subtype:$subtype subtype_len:$subtypelen company:$company UUID:$iBeaconUUID major:$major minor:$minor txPower:$txPower"
         )
-
-
     }
 
     private fun showPermissionDialog() {
@@ -230,5 +219,4 @@ class MainActivityBLE : AppCompatActivity() {
             alertDialog!!.show()
         }
     }
-
 }
