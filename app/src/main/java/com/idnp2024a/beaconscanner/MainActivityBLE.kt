@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanResult
+import android.content.Context
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
@@ -40,10 +41,10 @@ class MainActivityBLE : AppCompatActivity() {
         BTPermissions(this).check()
         initBluetooth()
 
-        // defining buttons
-        var btnAdversting = CustomButton(this, null, 0, this, R.id.btnAdversting)
-        val btnStart = StartButton(this, null, 0, this, R.id.btnStart)
-        val btnStop = CustomButton(this, null, 0, this, R.id.btnStop)
+        // Defining buttons
+        var btnAdversting = CustomButton(this, R.id.btnAdversting)
+        val btnStart = StartButton(this, this, R.id.btnStart)
+        val btnStop = CustomButton(this, R.id.btnStop)
 
         txtMessage = findViewById(R.id.txtMessage)
 
@@ -53,17 +54,17 @@ class MainActivityBLE : AppCompatActivity() {
             onScanFailedAction
         )
 
-        /**
-        btnAdversting.setOnClickListener {
-            //val iBeaconEmissor=IBeaconEmissor(applicationContext)
-            //iBeaconEmissor.emissor()
+        // Defining on click listeners
+        btnStart.button?.setOnClickListener{
+            if (isLocationEnabled()) {
+                btnStart.bluetoothScanStart(TAG, btScanner, permissionManager, bleScanCallback)
+            } else {
+                showPermissionDialog()
+            }
         }
-        */
-
-        btnStart.setupStartButtonBehavior(TAG, btScanner, permissionManager, bleScanCallback, this, alertDialog)
-        btnStop.setOnClickListener {
-            bluetoothScanStop(bleScanCallback)
-        }
+        //btnStop.setOnClickListener {
+        //    bluetoothScanStop(bleScanCallback)
+        //}
     }
 
     fun initBluetooth() {
@@ -75,6 +76,27 @@ class MainActivityBLE : AppCompatActivity() {
             btScanner = bluetoothAdapter.bluetoothLeScanner
         } else {
             Log.d(TAG, "BluetoothAdapter is null")
+        }
+    }
+
+    fun isLocationEnabled(): Boolean {
+        val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+        return LocationManagerCompat.isLocationEnabled(locationManager)
+    }
+
+    fun showPermissionDialog() {
+
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder.setTitle("Alerta")
+            .setMessage("El servicio de localizacion no esta activo")
+            .setPositiveButton("Close") { dialog, which ->
+                dialog.dismiss()
+            }
+        if (alertDialog == null) {
+            alertDialog = builder.create()
+        }
+        if (!alertDialog!!.isShowing()) {
+            alertDialog!!.show()
         }
     }
 

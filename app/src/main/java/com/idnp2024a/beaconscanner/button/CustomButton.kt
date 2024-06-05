@@ -8,26 +8,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 
 open class CustomButton @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
     activity: Activity? = null,
     viewId: Int? = null
-) : AppCompatButton(context, attrs, defStyleAttr) {
+){
+
+    var button: Button? = null
 
     init {
         if (activity != null && viewId != null){
-            initializeWithId(activity, viewId)
+            button = activity.findViewById<Button>(viewId)
         }
-    }
-
-    private fun initializeWithId(activity: Activity, viewId: Int){
-        // Getting the related button using the Id
-        val button = activity.findViewById<Button>(viewId)
-
-        // Creating other variables
-        this.id = button.id
-        this.text = button.text
-        this.layoutParams = button.layoutParams
     }
 }
