@@ -43,7 +43,7 @@ class MainActivityBLE : AppCompatActivity() {
 
         // Defining buttons
         var btnAdversting = CustomButton(this, R.id.btnAdversting)
-        val btnStart = StartButton(this, this, R.id.btnStart)
+        val btnStart = StartButton(this, R.id.btnStart)
         val btnStop = CustomButton(this, R.id.btnStop)
 
         txtMessage = findViewById(R.id.txtMessage)
@@ -62,9 +62,9 @@ class MainActivityBLE : AppCompatActivity() {
                 showPermissionDialog()
             }
         }
-        //btnStop.setOnClickListener {
-        //    bluetoothScanStop(bleScanCallback)
-        //}
+        btnStop.setOnClickListener {
+            bluetoothScanStop(bleScanCallback)
+        }
     }
 
     fun initBluetooth() {
