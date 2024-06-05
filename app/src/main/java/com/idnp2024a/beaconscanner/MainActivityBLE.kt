@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.location.LocationManagerCompat
 import com.idnp2024a.beaconscanner.button.CustomButton
 import com.idnp2024a.beaconscanner.button.StartButton
+import com.idnp2024a.beaconscanner.button.StopButton
 import com.idnp2024a.beaconscanner.permissions.BTPermissions
 import com.idnp2024a.beaconscanner.permissions.Permission
 import com.idnp2024a.beaconscanner.permissions.PermissionManager
@@ -44,7 +45,7 @@ class MainActivityBLE : AppCompatActivity() {
         // Defining buttons
         var btnAdversting = CustomButton(this, R.id.btnAdversting)
         val btnStart = StartButton(this, R.id.btnStart)
-        val btnStop = CustomButton(this, R.id.btnStop)
+        val btnStop = StopButton(this, R.id.btnStop)
 
         txtMessage = findViewById(R.id.txtMessage)
 
@@ -62,8 +63,8 @@ class MainActivityBLE : AppCompatActivity() {
                 showPermissionDialog()
             }
         }
-        btnStop.setOnClickListener {
-            bluetoothScanStop(bleScanCallback)
+        btnStop.button?.setOnClickListener {
+            btnStop.bluetoothScanStop(TAG, bleScanCallback, btScanner)
         }
     }
 
@@ -97,18 +98,6 @@ class MainActivityBLE : AppCompatActivity() {
         }
         if (!alertDialog!!.isShowing()) {
             alertDialog!!.show()
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun bluetoothScanStop(bleScanCallback: BleScanCallback) {
-        Log.d(TAG, "btScan ...1")
-        if (btScanner != null) {
-            Log.d(TAG, "btScan ...2")
-            btScanner!!.stopScan(bleScanCallback)
-
-        } else {
-            Log.d(TAG, "btScanner is null")
         }
     }
 
