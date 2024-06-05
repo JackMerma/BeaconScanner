@@ -33,6 +33,7 @@ class MainActivityBLE : AppCompatActivity() {
     private lateinit var bluetoothAdapter: BluetoothAdapter
     private lateinit var txtMessage: TextView;
     private val permissionManager = PermissionManager.from(this)
+    private val movingAverage = MovingAverage(5)
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -109,42 +110,6 @@ class MainActivityBLE : AppCompatActivity() {
         beacon.rssi = result?.rssi
         if (scanRecord != null && beacon.manufacturer == "ESP32 Beacon") {
             scanRecord?.bytes?.let { decodeiBeacon(it, beacon.rssi) }
-
-            /*
-            Log.d(TAG, "ScanRecord:" + scanRecord?.bytes?.let { Utils.toHexString(it) })
-            val iBeaconManufactureData =
-                scanRecord.getManufacturerSpecificData(0X004c)// fake Apple 0x004C LSB (ENDIAN_CHANGE_U16!)
-
-            if (iBeaconManufactureData != null && iBeaconManufactureData.size >= 23) {
-                Log.d(TAG, "ManufacturerSpecificData:" + Utils.toHexString(iBeaconManufactureData))
-                val iBeaconUUID = Utils.toHexString(iBeaconManufactureData.copyOfRange(2, 18))
-                val major = Integer.parseInt(
-                    Utils.toHexString(iBeaconManufactureData.copyOfRange(18, 20)),
-                    16
-                )
-                val minor = Integer.parseInt(
-                    Utils.toHexString(iBeaconManufactureData.copyOfRange(20, 22)),
-                    16
-                )
-                val txPower = Integer.parseInt(
-                    Utils.toHexString(iBeaconManufactureData.copyOfRange(22, 23)),
-                    16
-                )
-
-                beacon.type = Beacon.beaconType.iBeacon
-                beacon.uuid = iBeaconUUID
-                beacon.major = major
-                beacon.minor = minor
-
-                var beacon_manufacturer = beacon.manufacturer
-                var beacon_rssi = beacon.rssi
-                var beacon_type = beacon.type
-                Log.e(
-                    TAG,
-                    "manufacturer:$beacon_manufacturer rssi:$beacon_rssi type:$beacon_type iBeaconUUID:$iBeaconUUID major:$major minor:$minor txPower:$txPower"
-                )
-            }
-            */
         }
     }
 
@@ -172,13 +137,14 @@ class MainActivityBLE : AppCompatActivity() {
         val minor = Integer.parseInt(Utils.toHexString(data.copyOfRange(27, 29)), 16)
         val txPower = Integer.parseInt(Utils.toHexString(data.copyOfRange(29, 30)), 16)
 
-        //var factor = (-40 - rssi!!)/(10*2.0)
+        // Applying to RSSI
+        var smoothedRssi = movingAverage.next(rssi!!.toDouble())
+
         var factor = (-1 * txPower - rssi!!) / (10 * 4.0)
         var distance = Math.pow(10.0, factor)
-        //var rssi2= movingAverage.next(rssi)
 
-        var display = "TxPower:$txPower \nRSSI:$rssi \nRSSI2:rssi2 \nDistance:$distance"
-        txtMessage.setText(display)
+        val display = "TxPower:$txPower \nRSSI:$rssi \nSmoothed RSSI:$smoothedRssi \nDistance:$distance"
+        txtMessage.text = display
 
         Log.d(
             TAG,
