@@ -44,7 +44,6 @@ class MainActivityBLE : AppCompatActivity() {
         initBluetooth()
 
         // Defining buttons
-        var btnAdversting = CustomButton(this, R.id.btnAdversting)
         val btnStart = StartButton(this, R.id.btnStart)
         val btnStop = StopButton(this, R.id.btnStop)
 
@@ -90,7 +89,7 @@ class MainActivityBLE : AppCompatActivity() {
 
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
         builder.setTitle("Alerta")
-            .setMessage("El servicio de localizacion no esta activo")
+            .setMessage("The location service isn't active.")
             .setPositiveButton("Close") { dialog, which ->
                 dialog.dismiss()
             }
