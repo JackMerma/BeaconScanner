@@ -44,24 +44,11 @@ class PermissionManager private constructor(private val activity: AppCompatActiv
     }
 
     private fun handlePermissionRequest() {
-        activity.let {
-            when {
-                areAllPermissionsGranted(it) -> sendPositiveResult()
-                shouldShowPermissionRationale(it) -> displayRationale(it)
-                else -> requestPermissions()
-            }
+        if (areAllPermissionsGranted()){
+            sendPositiveResult()
+        } else {
+            requestPermissions()
         }
-    }
-
-    private fun displayRationale(activity: AppCompatActivity) {
-        AlertDialog.Builder(activity.applicationContext)
-            .setTitle("Permiso")
-            .setMessage(rationale ?: "fragment.getString(R.string.dialog_permission_default_message)")
-            .setCancelable(false)
-            .setPositiveButton("Aceptar") { _, _ ->
-                requestPermissions()
-            }
-            .show()
     }
 
     private fun sendPositiveResult() {
@@ -85,28 +72,16 @@ class PermissionManager private constructor(private val activity: AppCompatActiv
         permissionCheck?.launch(getPermissionList())
     }
 
-    private fun areAllPermissionsGranted(activity: AppCompatActivity) =
+    private fun areAllPermissionsGranted() =
         requiredPermissions.all {
         it.isGranted(activity)
     }
-
-    private fun shouldShowPermissionRationale(activity: AppCompatActivity) =
-        requiredPermissions.any { it.requiresRationale(activity) }
 
     private fun getPermissionList() =
         requiredPermissions.flatMap { it.permissions.toList() }.toTypedArray()
 
     private fun Permission.isGranted(activity: AppCompatActivity) =
-        permissions.all { hasPermission(activity, it) }
-
-    private fun Permission.requiresRationale(activity: AppCompatActivity) =
-        permissions.any { activity.shouldShowRequestPermissionRationale(it) }
-
-    private fun hasPermission(fragment: AppCompatActivity, permission: String) =
-        ContextCompat.checkSelfPermission(
-            fragment.applicationContext, permission
-        ) == PackageManager.PERMISSION_GRANTED
-
+        permissions.all { ContextCompat.checkSelfPermission(activity, it) == PackageManager.PERMISSION_GRANTED }
 }
 
 sealed class Permission(vararg val permissions: String) {
@@ -120,5 +95,4 @@ sealed class Permission(vararg val permissions: String) {
             else -> throw IllegalArgumentException("Unknown permission: $permission")
         }
     }
-
 }
